@@ -1,0 +1,8 @@
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/ApidemoApplication.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/config/OpenApiConfig.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/controller/ReminderController.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/dto/ReminderRequest.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/dto/ReminderResponse.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/entity/Reminder.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/repository/ReminderRepository.java
+/home/vijay/work/lab/java/apidemo/src/main/java/org/example/apidemo/service/ReminderService.java

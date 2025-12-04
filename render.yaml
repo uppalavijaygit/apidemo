@@ -1,0 +1,26 @@
+# Render deployment configuration
+# For free tier deployment on Render.com
+
+services:
+  - type: web
+    name: reminder-api
+    env: java
+    region: oregon  # or singapore, frankfurt
+    plan: free  # Free tier
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/apidemo-0.0.1-SNAPSHOT.jar
+    healthCheckPath: /api/reminders
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://companieshousedevelopment-companieshousedevelopmen-24kalcfmh7tf.cj6q822y6ibi.eu-west-2.rds.amazonaws.com:5432/companies_house_development
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false  # Set this in Render dashboard as a secret
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: validate
+      - key: SPRING_JPA_SHOW_SQL
+        value: "false"
+      - key: JAVA_OPTS
+        value: -Xmx512m -Xms256m
+

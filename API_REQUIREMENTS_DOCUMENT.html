@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminder API - Requirements Document</title>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            line-height: 1.7;
+            color: #333;
+            background-color: #fff;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #95a5a6;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        h4 {
+            color: #666;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 25px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            padding: 15px;
+            text-align: left;
+            border: 1px solid #2980b9;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e8f4f8;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+        
+        pre {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        
+        pre code {
+            background-color: transparent;
+            padding: 0;
+            color: #333;
+        }
+        
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin: 25px 0;
+            padding: 15px 25px;
+            background-color: #f8f9fa;
+            color: #555;
+            font-style: italic;
+        }
+        
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 40px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 40px 0;
+        }
+        
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 30px 0;
+        }
+        
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        
+        .toc a {
+            color: #34495e;
+        }
+        
+        .highlight-box {
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Reminder API - Requirements Document</h1>
+<p><strong>Document Version:</strong> 1.0<br />
+<strong>Date:</strong> December 4, 2025<br />
+<strong>Prepared For:</strong> API Testing Learning<br />
+<strong>API Base URL:</strong> <code>http://localhost:8080</code></p>
+<hr />
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#api-endpoints">API Endpoints</a></li>
+<li><a href="#data-models">Data Models</a></li>
+<li><a href="#test-scenarios">Test Scenarios</a></li>
+<li><a href="#error-handling">Error Handling</a></li>
+<li><a href="#swagger-documentation">Swagger Documentation</a></li>
+<li><a href="#testing-checklist">Testing Checklist</a></li>
+</ol>
+<hr />
+<h2>Overview</h2>
+<h3>Purpose</h3>
+<p>This document describes the Reminder API, which provides RESTful endpoints for managing reminder records stored in the Companies House database. The API supports full CRUD (Create, Read, Update, Delete) operations with filtering and pagination capabilities.</p>
+<h3>Base Information</h3>
+<ul>
+<li><strong>Base URL:</strong> <code>http://localhost:8080</code></li>
+<li><strong>API Path Prefix:</strong> <code>/api/reminders</code></li>
+<li><strong>Content-Type:</strong> <code>application/json</code></li>
+<li><strong>Authentication:</strong> None (for demo purposes)</li>
+</ul>
+<h3>Key Features</h3>
+<ul>
+<li>Retrieve all reminders with optional filtering</li>
+<li>Get a specific reminder by reference number</li>
+<li>Create new reminders</li>
+<li>Update existing reminders (full and partial updates)</li>
+<li>Delete reminders</li>
+<li>Filter by company number and status</li>
+<li>Pagination and sorting support</li>
+</ul>
+<hr />
+<h2>API Endpoints</h2>
+<h3>1. Get All Reminders</h3>
+<p><strong>Endpoint:</strong> <code>GET /api/reminders</code></p>
+<p><strong>Description:</strong> Retrieves a list of all reminders with optional filtering, pagination, and sorting.</p>
+<p><strong>Request Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td>String</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by reminder lifecycle status</td>
+<td><code>POSTED</code>, <code>SENT</code>, <code>DELIVERED</code></td>
+</tr>
+<tr>
+<td><code>companyNumber</code></td>
+<td>String</td>
+<td>No</td>
+<td>-</td>
+<td>Filter by company number</td>
+<td><code>15655987</code></td>
+</tr>
+<tr>
+<td><code>page</code></td>
+<td>Integer</td>
+<td>No</td>
+<td><code>0</code></td>
+<td>Page number (0-indexed)</td>
+<td><code>0</code>, <code>1</code>, <code>2</code></td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td>Integer</td>
+<td>No</td>
+<td><code>10</code></td>
+<td>Number of records per page</td>
+<td><code>10</code>, <code>20</code>, <code>50</code></td>
+</tr>
+<tr>
+<td><code>sortBy</code></td>
+<td>String</td>
+<td>No</td>
+<td><code>createdAt</code></td>
+<td>Field to sort by</td>
+<td><code>createdAt</code>, <code>dueDate</code>, <code>ref</code></td>
+</tr>
+<tr>
+<td><code>sortDir</code></td>
+<td>String</td>
+<td>No</td>
+<td><code>DESC</code></td>
+<td>Sort direction</td>
+<td><code>ASC</code>, <code>DESC</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200 OK</code></td>
+<td>Success - Returns list of reminders (may be empty if no filters applied)</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>No reminders found when filters are applied</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash"># Get all reminders (first 10)
+GET http://localhost:8080/api/reminders
+
+# Get reminders with filters
+GET http://localhost:8080/api/reminders?status=POSTED&amp;companyNumber=15655987&amp;page=0&amp;size=20
+
+# Get reminders with pagination
+GET http://localhost:8080/api/reminders?page=0&amp;size=5&amp;sortBy=createdAt&amp;sortDir=DESC
+</code></pre>
+<p><strong>Example Response (200 OK):</strong></p>
+<pre><code class="language-json">[
+    {
+        &quot;ref&quot;: &quot;26011715655987&quot;,
+        &quot;companyNumber&quot;: &quot;15655987&quot;,
+        &quot;dueDate&quot;: &quot;2026-01-17&quot;,
+        &quot;reminderLifecycleStatus&quot;: &quot;POSTED&quot;,
+        &quot;reminderGeneratedAt&quot;: &quot;2025-12-03T09:00:10.82&quot;,
+        &quot;reminderSentAt&quot;: null,
+        &quot;createdAt&quot;: &quot;2025-12-03T09:00:10.86497&quot;,
+        &quot;updatedAt&quot;: &quot;2025-12-03T09:00:16.16&quot;
+    },
+    {
+        &quot;ref&quot;: &quot;260117NI714223&quot;,
+        &quot;companyNumber&quot;: &quot;NI714223&quot;,
+        &quot;dueDate&quot;: &quot;2026-01-17&quot;,
+        &quot;reminderLifecycleStatus&quot;: &quot;POSTED&quot;,
+        &quot;reminderGeneratedAt&quot;: &quot;2025-12-03T09:00:10.822&quot;,
+        &quot;reminderSentAt&quot;: null,
+        &quot;createdAt&quot;: &quot;2025-12-03T09:00:10.86497&quot;,
+        &quot;updatedAt&quot;: &quot;2025-12-03T09:00:17.832&quot;
+    }
+]
+</code></pre>
+<p><strong>Example Response (404 Not Found):</strong></p>
+<pre><code>Status: 404 Not Found
+Body: (empty)
+</code></pre>
+<hr />
+<h3>2. Get Reminder by Reference Number</h3>
+<p><strong>Endpoint:</strong> <code>GET /api/reminders/{referenceNumber}</code></p>
+<p><strong>Description:</strong> Retrieves a specific reminder using its reference number (ref).</p>
+<p><strong>Path Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>referenceNumber</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>The reference number (ref) of the reminder</td>
+<td><code>26011715655987</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200 OK</code></td>
+<td>Success - Returns the reminder details</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>Reminder not found with the given reference number</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">GET http://localhost:8080/api/reminders/26011715655987
+</code></pre>
+<p><strong>Example Response (200 OK):</strong></p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;26011715655987&quot;,
+    &quot;companyNumber&quot;: &quot;15655987&quot;,
+    &quot;dueDate&quot;: &quot;2026-01-17&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;POSTED&quot;,
+    &quot;reminderGeneratedAt&quot;: &quot;2025-12-03T09:00:10.82&quot;,
+    &quot;reminderSentAt&quot;: null,
+    &quot;createdAt&quot;: &quot;2025-12-03T09:00:10.86497&quot;,
+    &quot;updatedAt&quot;: &quot;2025-12-03T09:00:16.16&quot;
+}
+</code></pre>
+<p><strong>Example Response (404 Not Found):</strong></p>
+<pre><code class="language-json">{
+    &quot;timestamp&quot;: &quot;2025-12-04T21:30:00.000+00:00&quot;,
+    &quot;status&quot;: 404,
+    &quot;error&quot;: &quot;Not Found&quot;,
+    &quot;message&quot;: &quot;Reminder not found with reference number: INVALID-REF&quot;,
+    &quot;path&quot;: &quot;/api/reminders/INVALID-REF&quot;
+}
+</code></pre>
+<hr />
+<h3>3. Create New Reminder</h3>
+<p><strong>Endpoint:</strong> <code>POST /api/reminders</code></p>
+<p><strong>Description:</strong> Creates a new reminder with the provided details.</p>
+<p><strong>Request Body:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ref</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>Reference number (must be unique)</td>
+<td><code>26011715655987</code></td>
+</tr>
+<tr>
+<td><code>companyNumber</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>Company number</td>
+<td><code>15655987</code></td>
+</tr>
+<tr>
+<td><code>dueDate</code></td>
+<td>Date (YYYY-MM-DD)</td>
+<td>Yes</td>
+<td>Due date for the reminder</td>
+<td><code>2026-01-17</code></td>
+</tr>
+<tr>
+<td><code>reminderLifecycleStatus</code></td>
+<td>String</td>
+<td>No</td>
+<td>Reminder lifecycle status</td>
+<td><code>POSTED</code>, <code>SENT</code>, <code>DELIVERED</code>, <code>PENDING</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>201 Created</code></td>
+<td>Success - Reminder created successfully</td>
+</tr>
+<tr>
+<td><code>400 Bad Request</code></td>
+<td>Invalid input or duplicate reference number</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">POST http://localhost:8080/api/reminders
+Content-Type: application/json
+
+{
+    &quot;ref&quot;: &quot;TEST20241204001&quot;,
+    &quot;companyNumber&quot;: &quot;12345678&quot;,
+    &quot;dueDate&quot;: &quot;2026-12-31&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;PENDING&quot;
+}
+</code></pre>
+<p><strong>Example Response (201 Created):</strong></p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;TEST20241204001&quot;,
+    &quot;companyNumber&quot;: &quot;12345678&quot;,
+    &quot;dueDate&quot;: &quot;2026-12-31&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;PENDING&quot;,
+    &quot;reminderGeneratedAt&quot;: &quot;2025-12-04T21:30:00.000&quot;,
+    &quot;reminderSentAt&quot;: null,
+    &quot;createdAt&quot;: &quot;2025-12-04T21:30:00.000&quot;,
+    &quot;updatedAt&quot;: &quot;2025-12-04T21:30:00.000&quot;
+}
+</code></pre>
+<p><strong>Example Response (400 Bad Request):</strong></p>
+<pre><code class="language-json">{
+    &quot;timestamp&quot;: &quot;2025-12-04T21:30:00.000+00:00&quot;,
+    &quot;status&quot;: 400,
+    &quot;error&quot;: &quot;Bad Request&quot;,
+    &quot;message&quot;: &quot;Reminder with reference number already exists: TEST20241204001&quot;,
+    &quot;path&quot;: &quot;/api/reminders&quot;
+}
+</code></pre>
+<hr />
+<h3>4. Update Reminder (Full Update)</h3>
+<p><strong>Endpoint:</strong> <code>PUT /api/reminders/{referenceNumber}</code></p>
+<p><strong>Description:</strong> Updates an existing reminder identified by reference number. All fields must be provided (full update).</p>
+<p><strong>Path Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>referenceNumber</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>The reference number of the reminder to update</td>
+<td><code>26011715655987</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request Body:</strong> Same as Create (all fields required)</p>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200 OK</code></td>
+<td>Success - Reminder updated successfully</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>Reminder not found with the given reference number</td>
+</tr>
+<tr>
+<td><code>400 Bad Request</code></td>
+<td>Invalid input or duplicate reference number</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">PUT http://localhost:8080/api/reminders/26011715655987
+Content-Type: application/json
+
+{
+    &quot;ref&quot;: &quot;26011715655987&quot;,
+    &quot;companyNumber&quot;: &quot;15655987&quot;,
+    &quot;dueDate&quot;: &quot;2026-02-17&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;SENT&quot;
+}
+</code></pre>
+<p><strong>Example Response (200 OK):</strong></p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;26011715655987&quot;,
+    &quot;companyNumber&quot;: &quot;15655987&quot;,
+    &quot;dueDate&quot;: &quot;2026-02-17&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;SENT&quot;,
+    &quot;reminderGeneratedAt&quot;: &quot;2025-12-03T09:00:10.82&quot;,
+    &quot;reminderSentAt&quot;: null,
+    &quot;createdAt&quot;: &quot;2025-12-03T09:00:10.86497&quot;,
+    &quot;updatedAt&quot;: &quot;2025-12-04T21:35:00.000&quot;
+}
+</code></pre>
+<hr />
+<h3>5. Partial Update Reminder</h3>
+<p><strong>Endpoint:</strong> <code>PATCH /api/reminders/{referenceNumber}</code></p>
+<p><strong>Description:</strong> Partially updates an existing reminder. Only provided fields will be updated.</p>
+<p><strong>Path Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>referenceNumber</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>The reference number of the reminder to update</td>
+<td><code>26011715655987</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Request Body:</strong> Any combination of fields (all optional)</p>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>200 OK</code></td>
+<td>Success - Reminder updated successfully</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>Reminder not found with the given reference number</td>
+</tr>
+<tr>
+<td><code>400 Bad Request</code></td>
+<td>Invalid input</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">PATCH http://localhost:8080/api/reminders/26011715655987
+Content-Type: application/json
+
+{
+    &quot;reminderLifecycleStatus&quot;: &quot;DELIVERED&quot;
+}
+</code></pre>
+<p><strong>Example Response (200 OK):</strong></p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;26011715655987&quot;,
+    &quot;companyNumber&quot;: &quot;15655987&quot;,
+    &quot;dueDate&quot;: &quot;2026-01-17&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;DELIVERED&quot;,
+    &quot;reminderGeneratedAt&quot;: &quot;2025-12-03T09:00:10.82&quot;,
+    &quot;reminderSentAt&quot;: null,
+    &quot;createdAt&quot;: &quot;2025-12-03T09:00:10.86497&quot;,
+    &quot;updatedAt&quot;: &quot;2025-12-04T21:40:00.000&quot;
+}
+</code></pre>
+<hr />
+<h3>6. Delete Reminder</h3>
+<p><strong>Endpoint:</strong> <code>DELETE /api/reminders/{referenceNumber}</code></p>
+<p><strong>Description:</strong> Deletes a reminder identified by reference number.</p>
+<p><strong>Path Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>referenceNumber</code></td>
+<td>String</td>
+<td>Yes</td>
+<td>The reference number of the reminder to delete</td>
+<td><code>26011715655987</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response Codes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Status Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>204 No Content</code></td>
+<td>Success - Reminder deleted successfully</td>
+</tr>
+<tr>
+<td><code>404 Not Found</code></td>
+<td>Reminder not found with the given reference number</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Request:</strong></p>
+<pre><code class="language-bash">DELETE http://localhost:8080/api/reminders/TEST20241204001
+</code></pre>
+<p><strong>Example Response (204 No Content):</strong></p>
+<pre><code>Status: 204 No Content
+Body: (empty)
+</code></pre>
+<hr />
+<h2>Data Models</h2>
+<h3>ReminderRequest</h3>
+<p>Used for creating and updating reminders.</p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;string (required, unique)&quot;,
+    &quot;companyNumber&quot;: &quot;string (required)&quot;,
+    &quot;dueDate&quot;: &quot;date (required, format: YYYY-MM-DD)&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;string (optional)&quot;
+}
+</code></pre>
+<p><strong>Field Details:</strong></p>
+<ul>
+<li><strong>ref</strong>: Reference number, must be unique across all reminders</li>
+<li><strong>companyNumber</strong>: Company identifier (e.g., <code>15655987</code>, <code>NI714223</code>)</li>
+<li><strong>dueDate</strong>: Due date in ISO date format (YYYY-MM-DD)</li>
+<li><strong>reminderLifecycleStatus</strong>: Status values: <code>POSTED</code>, <code>SENT</code>, <code>DELIVERED</code>, <code>PENDING</code></li>
+</ul>
+<h3>ReminderResponse</h3>
+<p>Returned by all GET endpoints and after create/update operations.</p>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;string&quot;,
+    &quot;companyNumber&quot;: &quot;string&quot;,
+    &quot;dueDate&quot;: &quot;date (YYYY-MM-DD)&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;string&quot;,
+    &quot;reminderGeneratedAt&quot;: &quot;datetime (ISO 8601)&quot;,
+    &quot;reminderSentAt&quot;: &quot;datetime (ISO 8601) or null&quot;,
+    &quot;createdAt&quot;: &quot;datetime (ISO 8601)&quot;,
+    &quot;updatedAt&quot;: &quot;datetime (ISO 8601)&quot;
+}
+</code></pre>
+<p><strong>Field Details:</strong></p>
+<ul>
+<li><strong>ref</strong>: Reference number (primary key)</li>
+<li><strong>companyNumber</strong>: Company identifier</li>
+<li><strong>dueDate</strong>: Due date</li>
+<li><strong>reminderLifecycleStatus</strong>: Current status</li>
+<li><strong>reminderGeneratedAt</strong>: When the reminder was generated (auto-set on create)</li>
+<li><strong>reminderSentAt</strong>: When the reminder was sent (nullable)</li>
+<li><strong>createdAt</strong>: Record creation timestamp (auto-set)</li>
+<li><strong>updatedAt</strong>: Last update timestamp (auto-updated)</li>
+</ul>
+<hr />
+<h2>Test Scenarios</h2>
+<h3>Scenario 1: Retrieve All Reminders</h3>
+<p><strong>Objective:</strong> Verify that the API returns all reminders without filters.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify response contains an array of reminders</li>
+<li>Verify each reminder has required fields: <code>ref</code>, <code>companyNumber</code>, <code>dueDate</code>, <code>reminderLifecycleStatus</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns list of reminders (may be empty if database is empty)</p>
+<hr />
+<h3>Scenario 2: Filter by Company Number (Existing)</h3>
+<p><strong>Objective:</strong> Verify filtering by company number returns correct results.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders?companyNumber=15655987</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify all returned reminders have <code>companyNumber</code> = <code>15655987</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns only reminders for the specified company number</p>
+<hr />
+<h3>Scenario 3: Filter by Company Number (Non-Existent)</h3>
+<p><strong>Objective:</strong> Verify that filtering by non-existent company number returns 404.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders?companyNumber=99999999</code></li>
+<li>Verify response status is <code>404 Not Found</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns 404 status code</p>
+<hr />
+<h3>Scenario 4: Filter by Status</h3>
+<p><strong>Objective:</strong> Verify filtering by status works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders?status=POSTED</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify all returned reminders have <code>reminderLifecycleStatus</code> = <code>POSTED</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns only reminders with the specified status</p>
+<hr />
+<h3>Scenario 5: Pagination</h3>
+<p><strong>Objective:</strong> Verify pagination works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders?page=0&amp;size=5</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify response contains maximum 5 records</li>
+<li>Send GET request with <code>page=1&amp;size=5</code></li>
+<li>Verify different records are returned (if more than 5 exist)</li>
+</ol>
+<p><strong>Expected Result:</strong> Returns correct number of records per page</p>
+<hr />
+<h3>Scenario 6: Sorting</h3>
+<p><strong>Objective:</strong> Verify sorting works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders?sortBy=createdAt&amp;sortDir=DESC</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify records are sorted by <code>createdAt</code> in descending order</li>
+<li>Send GET request with <code>sortDir=ASC</code></li>
+<li>Verify records are sorted in ascending order</li>
+</ol>
+<p><strong>Expected Result:</strong> Returns records in the specified sort order</p>
+<hr />
+<h3>Scenario 7: Get Reminder by Reference Number (Existing)</h3>
+<p><strong>Objective:</strong> Verify retrieving a specific reminder works.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>First, get a reference number from the list endpoint</li>
+<li>Send GET request to <code>http://localhost:8080/api/reminders/{ref}</code></li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify response contains the correct reminder details</li>
+</ol>
+<p><strong>Expected Result:</strong> Returns the specific reminder</p>
+<hr />
+<h3>Scenario 8: Get Reminder by Reference Number (Non-Existent)</h3>
+<p><strong>Objective:</strong> Verify that requesting non-existent reminder returns 404.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request to <code>http://localhost:8080/api/reminders/INVALID-REF-12345</code></li>
+<li>Verify response status is <code>404 Not Found</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns 404 status code</p>
+<hr />
+<h3>Scenario 9: Create New Reminder</h3>
+<p><strong>Objective:</strong> Verify creating a new reminder works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Prepare a unique reference number (e.g., <code>TEST-{timestamp}</code>)</li>
+<li>Send POST request to <code>http://localhost:8080/api/reminders</code> with valid data</li>
+<li>Verify response status is <code>201 Created</code></li>
+<li>Verify response contains the created reminder with all fields</li>
+<li>Verify <code>reminderGeneratedAt</code> and <code>createdAt</code> are set</li>
+</ol>
+<p><strong>Expected Result:</strong> Reminder is created successfully</p>
+<hr />
+<h3>Scenario 10: Create Duplicate Reminder</h3>
+<p><strong>Objective:</strong> Verify that creating a reminder with duplicate reference number fails.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Create a reminder with reference number <code>TEST-DUP-001</code></li>
+<li>Try to create another reminder with the same reference number</li>
+<li>Verify response status is <code>400 Bad Request</code></li>
+<li>Verify error message indicates duplicate reference number</li>
+</ol>
+<p><strong>Expected Result:</strong> Returns 400 error with appropriate message</p>
+<hr />
+<h3>Scenario 11: Update Reminder (Full Update)</h3>
+<p><strong>Objective:</strong> Verify full update works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Get an existing reminder reference number</li>
+<li>Send PUT request with updated data</li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify response contains updated data</li>
+<li>Verify <code>updatedAt</code> timestamp is changed</li>
+<li>Get the reminder again and verify changes persisted</li>
+</ol>
+<p><strong>Expected Result:</strong> Reminder is updated successfully</p>
+<hr />
+<h3>Scenario 12: Partial Update Reminder</h3>
+<p><strong>Objective:</strong> Verify partial update works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Get an existing reminder reference number</li>
+<li>Note the current <code>reminderLifecycleStatus</code></li>
+<li>Send PATCH request with only <code>reminderLifecycleStatus</code> field updated</li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify only the specified field is updated</li>
+<li>Verify other fields remain unchanged</li>
+</ol>
+<p><strong>Expected Result:</strong> Only specified fields are updated</p>
+<hr />
+<h3>Scenario 13: Delete Reminder</h3>
+<p><strong>Objective:</strong> Verify deleting a reminder works correctly.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Create a test reminder</li>
+<li>Note the reference number</li>
+<li>Send DELETE request to <code>http://localhost:8080/api/reminders/{ref}</code></li>
+<li>Verify response status is <code>204 No Content</code></li>
+<li>Try to get the deleted reminder</li>
+<li>Verify it returns <code>404 Not Found</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Reminder is deleted successfully</p>
+<hr />
+<h3>Scenario 14: Delete Non-Existent Reminder</h3>
+<p><strong>Objective:</strong> Verify that deleting non-existent reminder returns 404.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send DELETE request to <code>http://localhost:8080/api/reminders/INVALID-REF-99999</code></li>
+<li>Verify response status is <code>404 Not Found</code></li>
+</ol>
+<p><strong>Expected Result:</strong> Returns 404 status code</p>
+<hr />
+<h3>Scenario 15: Combined Filters</h3>
+<p><strong>Objective:</strong> Verify multiple filters work together.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>Send GET request with both <code>status</code> and <code>companyNumber</code> filters</li>
+<li>Verify response status is <code>200 OK</code></li>
+<li>Verify all returned reminders match both criteria</li>
+</ol>
+<p><strong>Expected Result:</strong> Returns reminders matching all specified filters</p>
+<hr />
+<h2>Error Handling</h2>
+<h3>Common Error Responses</h3>
+<h4>400 Bad Request</h4>
+<p><strong>When:</strong> Invalid input data, missing required fields, or duplicate reference number</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-json">{
+    &quot;timestamp&quot;: &quot;2025-12-04T21:30:00.000+00:00&quot;,
+    &quot;status&quot;: 400,
+    &quot;error&quot;: &quot;Bad Request&quot;,
+    &quot;message&quot;: &quot;Reminder with reference number already exists: TEST-001&quot;,
+    &quot;path&quot;: &quot;/api/reminders&quot;
+}
+</code></pre>
+<h4>404 Not Found</h4>
+<p><strong>When:</strong></p>
+<ul>
+<li>Reminder not found by reference number</li>
+<li>No reminders found when filters are applied</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-json">{
+    &quot;timestamp&quot;: &quot;2025-12-04T21:30:00.000+00:00&quot;,
+    &quot;status&quot;: 404,
+    &quot;error&quot;: &quot;Not Found&quot;,
+    &quot;message&quot;: &quot;Reminder not found with reference number: INVALID-REF&quot;,
+    &quot;path&quot;: &quot;/api/reminders/INVALID-REF&quot;
+}
+</code></pre>
+<h4>500 Internal Server Error</h4>
+<p><strong>When:</strong> Unexpected server error occurs</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-json">{
+    &quot;timestamp&quot;: &quot;2025-12-04T21:30:00.000+00:00&quot;,
+    &quot;status&quot;: 500,
+    &quot;error&quot;: &quot;Internal Server Error&quot;,
+    &quot;message&quot;: &quot;An unexpected error occurred&quot;,
+    &quot;path&quot;: &quot;/api/reminders&quot;
+}
+</code></pre>
+<hr />
+<h2>Swagger Documentation</h2>
+<h3>Accessing Swagger UI</h3>
+<ol>
+<li><strong>Open your web browser</strong></li>
+<li><strong>Navigate to:</strong> <code>http://localhost:8080/swagger-ui.html</code></li>
+<li><strong>You will see:</strong> Interactive API documentation with all endpoints</li>
+</ol>
+<h3>Using Swagger UI for Testing</h3>
+<ol>
+<li><strong>Select an endpoint</strong> from the list (e.g., &quot;GET /api/reminders&quot;)</li>
+<li><strong>Click &quot;Try it out&quot;</strong> button</li>
+<li><strong>Enter parameters</strong> (if any) in the input fields</li>
+<li><strong>Click &quot;Execute&quot;</strong> button</li>
+<li><strong>View the response</strong> below with status code and body</li>
+</ol>
+<h3>Benefits of Using Swagger</h3>
+<ul>
+<li><strong>No need to write curl commands</strong> - UI handles it</li>
+<li><strong>See all available parameters</strong> and their descriptions</li>
+<li><strong>Test requests directly</strong> from the browser</li>
+<li><strong>View request/response examples</strong></li>
+<li><strong>Understand data models</strong> and field requirements</li>
+</ul>
+<hr />
+<h2>Testing Checklist</h2>
+<p>Use this checklist to ensure comprehensive testing:</p>
+<h3>GET Endpoints</h3>
+<ul>
+<li>[ ] Get all reminders (no filters)</li>
+<li>[ ] Get all reminders with pagination (page=0, size=5)</li>
+<li>[ ] Get all reminders with status filter (existing status)</li>
+<li>[ ] Get all reminders with status filter (non-existent status) → should return 404</li>
+<li>[ ] Get all reminders with companyNumber filter (existing)</li>
+<li>[ ] Get all reminders with companyNumber filter (non-existent) → should return 404</li>
+<li>[ ] Get all reminders with multiple filters</li>
+<li>[ ] Get all reminders with sorting (ASC)</li>
+<li>[ ] Get all reminders with sorting (DESC)</li>
+<li>[ ] Get reminder by reference number (existing)</li>
+<li>[ ] Get reminder by reference number (non-existent) → should return 404</li>
+</ul>
+<h3>POST Endpoint</h3>
+<ul>
+<li>[ ] Create reminder with all required fields</li>
+<li>[ ] Create reminder with optional fields</li>
+<li>[ ] Create reminder with duplicate reference number → should return 400</li>
+<li>[ ] Create reminder with missing required field → should return 400</li>
+<li>[ ] Create reminder with invalid date format → should return 400</li>
+</ul>
+<h3>PUT Endpoint</h3>
+<ul>
+<li>[ ] Update reminder with all fields (existing reminder)</li>
+<li>[ ] Update reminder with non-existent reference number → should return 404</li>
+<li>[ ] Update reminder with duplicate reference number → should return 400</li>
+</ul>
+<h3>PATCH Endpoint</h3>
+<ul>
+<li>[ ] Partial update - update only status field</li>
+<li>[ ] Partial update - update only dueDate field</li>
+<li>[ ] Partial update - update multiple fields</li>
+<li>[ ] Partial update with non-existent reference number → should return 404</li>
+</ul>
+<h3>DELETE Endpoint</h3>
+<ul>
+<li>[ ] Delete existing reminder → should return 204</li>
+<li>[ ] Delete non-existent reminder → should return 404</li>
+<li>[ ] Verify deleted reminder cannot be retrieved</li>
+</ul>
+<h3>Edge Cases</h3>
+<ul>
+<li>[ ] Test with empty request body</li>
+<li>[ ] Test with invalid JSON format</li>
+<li>[ ] Test with very large page size</li>
+<li>[ ] Test with negative page number</li>
+<li>[ ] Test with special characters in company number</li>
+<li>[ ] Test with very long reference number</li>
+</ul>
+<hr />
+<h2>Sample Test Data</h2>
+<h3>Valid Test Reminders</h3>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;TEST-2024-001&quot;,
+    &quot;companyNumber&quot;: &quot;12345678&quot;,
+    &quot;dueDate&quot;: &quot;2026-12-31&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;PENDING&quot;
+}
+</code></pre>
+<pre><code class="language-json">{
+    &quot;ref&quot;: &quot;TEST-2024-002&quot;,
+    &quot;companyNumber&quot;: &quot;87654321&quot;,
+    &quot;dueDate&quot;: &quot;2026-06-15&quot;,
+    &quot;reminderLifecycleStatus&quot;: &quot;POSTED&quot;
+}
+</code></pre>
+<h3>Reference Numbers for Testing</h3>
+<ul>
+<li><strong>Existing (from database):</strong> <code>26011715655987</code>, <code>260117NI714223</code>, <code>26011715655420</code></li>
+<li><strong>Non-existent:</strong> <code>INVALID-REF-99999</code>, <code>TEST-NOT-FOUND-001</code></li>
+</ul>
+<h3>Company Numbers for Testing</h3>
+<ul>
+<li><strong>Existing:</strong> <code>15655987</code>, <code>NI714223</code>, <code>15655420</code></li>
+<li><strong>Non-existent:</strong> <code>99999999</code>, <code>00000000</code></li>
+</ul>
+<hr />
+<h2>Tools for API Testing</h2>
+<h3>1. Swagger UI (Recommended for Beginners)</h3>
+<ul>
+<li><strong>URL:</strong> <code>http://localhost:8080/swagger-ui.html</code></li>
+<li><strong>Best for:</strong> Visual testing, understanding API structure</li>
+<li><strong>No installation required</strong></li>
+</ul>
+<h3>2. Postman</h3>
+<ul>
+<li><strong>Download:</strong> https://www.postman.com/downloads/</li>
+<li><strong>Best for:</strong> Advanced testing, test collections, automation</li>
+<li><strong>Features:</strong> Save requests, create test suites, environment variables</li>
+</ul>
+<h3>3. cURL (Command Line)</h3>
+<ul>
+<li><strong>Best for:</strong> Quick tests, scripting, CI/CD</li>
+<li><strong>Example:</strong><pre><code class="language-bash">curl -X GET &quot;http://localhost:8080/api/reminders&quot; -H &quot;accept: application/json&quot;
+</code></pre>
+</li>
+</ul>
+<h3>4. Browser</h3>
+<ul>
+<li><strong>Best for:</strong> Simple GET requests</li>
+<li><strong>Just type URL in address bar:</strong> <code>http://localhost:8080/api/reminders</code></li>
+</ul>
+<hr />
+<h2>Tips for Manual Testing</h2>
+<ol>
+<li><strong>Start with Swagger UI</strong> - It's the easiest way to understand the API</li>
+<li><strong>Test happy paths first</strong> - Verify basic functionality works</li>
+<li><strong>Then test error cases</strong> - Verify error handling works correctly</li>
+<li><strong>Use real data from database</strong> - Get actual reference numbers from GET all endpoint</li>
+<li><strong>Clean up test data</strong> - Delete test reminders after testing</li>
+<li><strong>Document your findings</strong> - Note any issues or unexpected behavior</li>
+<li><strong>Test one thing at a time</strong> - Don't combine multiple test scenarios</li>
+<li><strong>Verify response structure</strong> - Check that all expected fields are present</li>
+<li><strong>Check status codes</strong> - Ensure correct HTTP status codes are returned</li>
+<li><strong>Test edge cases</strong> - Try invalid inputs, empty values, etc.</li>
+</ol>
+<hr />
+<h2>Support and Questions</h2>
+<p>If you encounter any issues or have questions:</p>
+<ol>
+<li><strong>Check Swagger Documentation</strong> - Most answers are in the Swagger UI</li>
+<li><strong>Review this document</strong> - All endpoints and scenarios are documented</li>
+<li><strong>Check response error messages</strong> - They often explain what went wrong</li>
+<li><strong>Verify application is running</strong> - Ensure <code>http://localhost:8080</code> is accessible</li>
+</ol>
+<hr />
+<p><strong>Document End</strong></p>
+<p><em>Happy Testing! 🚀</em></p>
+
+    
+    <hr>
+    <footer style="text-align: center; color: #7f8c8d; margin-top: 50px; font-size: 0.9em;">
+        <p>Reminder API Requirements Document - Version 1.0</p>
+        <p>Generated on: Thu Dec  4 10:25:42 PM GMT 2025</p>
+    </footer>
+</body>
+</html>
